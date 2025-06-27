@@ -1,7 +1,7 @@
+import os
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-import os
 import aiofiles
 from services.pdf_processor import PDFProcessor
 from services.ats_scorer import ATSScorer
@@ -14,10 +14,10 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(title="NSUT ATS Scorer API", version="1.0.0")
 
-# CORS middleware
+# CORS middleware for production
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify your frontend URL
+    allow_origins=["*"],  # Will update with Netlify URL later
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -33,6 +33,16 @@ os.makedirs("uploads", exist_ok=True)
 @app.get("/")
 async def root():
     return {"message": "NSUT ATS Scorer API is running"}
+
+@app.get("/health")
+async def health_check():
+    return {
+        "status": "healthy",
+        "services": {
+            "pdf_processor": "running",
+            "ats_scorer": "running"
+        }
+    }
 
 @app.post("/upload-resume", response_model=ResumeAnalysis)
 async def upload_resume(file: UploadFile = File(...)):
@@ -76,16 +86,6 @@ async def upload_resume(file: UploadFile = File(...)):
         if 'file_path' in locals() and os.path.exists(file_path):
             os.remove(file_path)
         raise HTTPException(status_code=500, detail=f"Error processing resume: {str(e)}")
-
-@app.get("/health")
-async def health_check():
-    return {
-        "status": "healthy",
-        "services": {
-            "pdf_processor": "running",
-            "ats_scorer": "running"
-        }
-    }
 
 if __name__ == "__main__":
     import uvicorn
