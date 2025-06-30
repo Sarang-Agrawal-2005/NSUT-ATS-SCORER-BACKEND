@@ -1,0 +1,14 @@
+backend/
+├── main.py
+├── requirements.txt
+├── services/
+│   ├── ats_scorer.py
+│   └── pdf_processor.py
+├── models/
+│   └── resume_models.py
+├── static/
+│   ├── images/
+│   │   └── NSUT_logo.png        
+│   └── templates/
+│       └── nsut_template.pdf   
+└── uploads/                     # Will be created automatically
