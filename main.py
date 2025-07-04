@@ -45,7 +45,7 @@ ats_scorer = ATSScorer()
 os.makedirs("uploads", exist_ok=True)
 os.makedirs("static/images", exist_ok=True)
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 async def root():
     return {"message": "NSUT ATS Scorer API is working"}
 
